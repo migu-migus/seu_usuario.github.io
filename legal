@@ -1,0 +1,123 @@
+diff  
+
+
+index.html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Miguel Dash Multiverso</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    canvas { background: #111; display: block; margin: 0 auto; }
+    body { background-color: #000; }
+  </style>
+</head>
+<body>
+  <canvas id="gameCanvas" width="800" height="400"></canvas>
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let player = {
+      x: 100,
+      y: 300,
+      width: 30,
+      height: 30,
+      color: 'cyan',
+      dy: 0,
+      gravity: 0.8,
+      jumpPower: -12,
+      onGround: true
+    };
+
+    let obstacles = [];
+    let gameSpeed = 4;
+    let frame = 0;
+    let score = 0;
+
+    function spawnObstacle() {
+      const height = 40 + Math.random() * 60;
+      obstacles.push({
+        x: canvas.width,
+        y: canvas.height - height,
+        width: 20 + Math.random() * 30,
+        height: height,
+        color: 'red'
+      });
+    }
+
+    function update() {
+      frame++;
+      if (frame % 90 === 0) spawnObstacle();
+
+      player.dy += player.gravity;
+      player.y += player.dy;
+
+      if (player.y + player.height >= canvas.height) {
+        player.y = canvas.height - player.height;
+        player.dy = 0;
+        player.onGround = true;
+      } else {
+        player.onGround = false;
+      }
+
+      obstacles.forEach(ob => ob.x -= gameSpeed);
+
+      // Colisão
+      for (let ob of obstacles) {
+        if (player.x < ob.x + ob.width &&
+            player.x + player.width > ob.x &&
+            player.y < ob.y + ob.height &&
+            player.y + player.height > ob.y) {
+          alert("💀 Game Over! Pontuação: " + score);
+          document.location.reload();
+        }
+      }
+
+      score++;
+    }
+
+    function draw() {
+      ctx.fillStyle = '#222';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = player.color;
+      ctx.fillRect(player.x, player.y, player.width, player.height);
+
+      obstacles.forEach(ob => {
+        ctx.fillStyle = ob.color;
+        ctx.fillRect(ob.x, ob.y, ob.width, ob.height);
+      });
+
+      ctx.fillStyle = '#fff';
+      ctx.font = '20px Arial';
+      ctx.fillText("Score: " + score, 10, 30);
+    }
+
+    function loop() {
+      update();
+      draw();
+      requestAnimationFrame(loop);
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if ((e.code === 'Space' || e.code === 'ArrowUp') && player.onGround) {
+        player.dy = player.jumpPower;
+      }
+    });
+
+    canvas.addEventListener('click', () => {
+      if (player.onGround) {
+        player.dy = player.jumpPower;
+      }
+    });
+
+    loop();
+  </script>
+</body>
+</html>
+pgsql
+
+
+Primeiro commit do jogo Miguel Dash
